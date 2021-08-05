@@ -7,7 +7,7 @@
     "url": "https://github.com/MaartenvdHaar/tinyhouse.git"
   },
   "scripts": {
-    "postinstall": "tsc && npm run postinstall:server && npm run postinstall:client",
+    "postinstall": "npm run postinstall:server && npm run postinstall:client",
     "postinstall:server": "npm ci --prefix server",
     "postinstall:client": "npm ci --prefix client",
     "start": "node build/index.js",
@@ -18,9 +18,23 @@
     "build:server": "npm run build --prefix server && mv ./server/build/ ./build/",
     "build:client": "npm run build --prefix client && mv ./client/build/ ./build/client/"
   },
-  "dependencies": {},
+  "dependencies": {
+    "typescript": "^4.2.4"
+  },
   "devDependencies": {
-    "concurrently": "^6.0.0"
+    "concurrently": "^6.0.0",
+    "@types/body-parser": "^1.19.0",
+    "@types/compression": "^1.7.1",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.11",
+    "@types/google__maps": "^0.5.14",
+    "@types/graphql": "^14.5.0",
+    "@types/lodash.merge": "^4.6.6",
+    "@types/mongodb": "^3.6.16",
+    "@types/node": "^14.17.0",
+    "@types/stripe": "^8.0.417",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0"
   },
   "engines": {
     "node": "14.x"

@@ -18,12 +18,9 @@
     "build:server": "npm run build --prefix server && mv ./server/build/ ./build/",
     "build:client": "npm run build --prefix client && mv ./client/build/ ./build/client/"
   },
-  "dependencies": {
-    "server": "file:./server"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "concurrently": "^6.0.0",
-    "server": "file:./server"
+    "concurrently": "^6.0.0"
   },
   "engines": {
     "node": "14.x"

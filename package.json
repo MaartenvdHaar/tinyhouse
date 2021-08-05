@@ -7,7 +7,7 @@
     "url": "https://github.com/MaartenvdHaar/tinyhouse.git"
   },
   "scripts": {
-    "postinstall": "npm run postinstall:server && npm run postinstall:client",
+    "postinstall": "tsc && npm run postinstall:server && npm run postinstall:client",
     "postinstall:server": "npm ci --prefix server",
     "postinstall:client": "npm ci --prefix client",
     "start": "node build/index.js",

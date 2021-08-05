@@ -1,0 +1,28 @@
+{
+  "name": "tinyhouse",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MaartenvdHaar/tinyhouse.git"
+  },
+  "scripts": {
+    "postinstall": "npm run postinstall:server && npm run postinstall:client",
+    "postinstall:server": "npm ci --prefix server",
+    "postinstall:client": "npm ci --prefix client",
+    "start": "node build/index.js",
+    "start:dev": "concurrently --kill-others-on-fail \"npm run start:dev:server\" \"npm run start:dev:client\"",
+    "start:dev:server": "npm start --prefix server",
+    "start:dev:client": "npm start --prefix client",
+    "build": "npm run build:server && npm run build:client && mkdir build/node_modules && cp -R server/node_modules/* build/node_modules",
+    "build:server": "npm run build --prefix server && mv ./server/build/ ./build/",
+    "build:client": "npm run build --prefix client && mv ./client/build/ ./build/client/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^6.0.0"
+  },
+  "engines": {
+    "node": "14.x"
+  }
+}

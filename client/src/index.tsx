@@ -17,7 +17,8 @@ import { AppHeader, Home, Host, Listing, Listings, Login, NotFound, Stripe, User
 import { LogIn as LogInData, LogInVariables } from './graphql/mutations/LogIn/__generated__/LogIn'
 import { LOG_IN } from './graphql/mutations'
 
-const httpLink = new HttpLink({ uri: '/api', credentials: 'include' })
+const development = process.env.NODE_ENV === 'development'
+const httpLink = new HttpLink({ uri: `${development && 'http://localhost:8080'}/api`, credentials: 'include' })
 
 const authLink = setContext((_, { headers }) => {
   const token = sessionStorage.getItem("token")

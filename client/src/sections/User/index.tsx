@@ -37,7 +37,8 @@ export const User = ({ match, viewer, setViewer }: Props & RouteComponentProps<M
         bookingsPage,
         listingsPage,
         limit: PAGE_LIMIT
-      }
+      },
+      fetchPolicy: 'cache-and-network'
     })
 
   const handleUserRefetch = async () => {

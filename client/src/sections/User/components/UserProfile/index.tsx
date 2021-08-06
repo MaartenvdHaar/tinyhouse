@@ -1,5 +1,5 @@
 import React from "react"
-import { useMutation } from "@apollo/client"
+import { useApolloClient, useMutation } from "@apollo/client"
 import { Avatar, Button, Card, Divider, Tag, Typography } from "antd"
 
 import { User as UserData } from "../../../../graphql/queries/User/__generated__/User"
@@ -7,6 +7,9 @@ import { displayErrorMessage, displaySuccessNotification, formatListingPrice } f
 import { DISCONNECT_STRIPE } from "../../../../graphql/mutations"
 import { DisconnectStripe as DisconnectStripeData } from "../../../../graphql/mutations/DisconnectStripe/__generated__/DisconnectStripe"
 import { Viewer } from "../../../../lib/types"
+import { AUTH_URL_STRIPE } from '../../../../graphql/queries'
+import { AuthUrlStripe as AuthUrlStripeData } from '../../../../graphql/queries/AuthUrlStripe/__generated__/AuthUrlStripe'
+
 
 const { Paragraph, Text, Title } = Typography
 
@@ -19,11 +22,9 @@ interface Props {
   setViewer: (viewer: Viewer) => void
 }
 
-const stripeAuthUrl = `
-  https://dashboard.stripe.com/oauth/authorize?response_type=code&client_id=${process.env.REACT_APP_S_CLIENT_ID}&scope=read_write
-`
-
 export const UserProfile = ({ user, viewer, viewerIsUser, handleUserRefetch, setViewer }: Props) => {
+  const client = useApolloClient()
+
   const [disconnectStripe, { loading }] = useMutation<DisconnectStripeData>(DISCONNECT_STRIPE, {
     onCompleted: data => {
       if (data && data.disconnectStripe) {
@@ -37,9 +38,13 @@ export const UserProfile = ({ user, viewer, viewerIsUser, handleUserRefetch, set
     }
   })
 
-  const redirectToStripe = () => {
-    window.location.href = stripeAuthUrl
-  }
+  const redirectToStripe = async () => {
+    const { data } = await client.query<AuthUrlStripeData>({
+      query: AUTH_URL_STRIPE,
+    });
+
+    window.location.href = data.authUrlStripe;
+  };
 
   const additionalDetails = user.hasWallet ? (
     <>

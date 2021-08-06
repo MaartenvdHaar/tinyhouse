@@ -93,6 +93,7 @@ export const typeDefs = gql`
 
   type Query {
     authUrl: String!
+    authUrlStripe: String!
     user(id: ID!): User!
     listing(id: ID!): Listing!
     listings(

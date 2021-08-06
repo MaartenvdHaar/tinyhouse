@@ -119,7 +119,8 @@ export const viewerResolvers: IResolvers = {
       } catch (error) {
         throw new Error(`Failed to query Google Auth Url: ${error}`);
       }
-    }
+    },
+    authUrlStripe: (): string => Stripe.authUrl,
   },
   Mutation: {
     logIn: async (

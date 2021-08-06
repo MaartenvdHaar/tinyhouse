@@ -43,7 +43,8 @@ const initialViewer: Viewer = {
   didRequest: false
 }
 
-const stripePromise = loadStripe(process.env.REACT_APP_S_PUBLISHABLE_KEY as string);
+const spKey = 'pk_test_51JK2GoI80NFNbk9lszMBf9ijbynoxTW501rqQzp5UaYqKr9pafr8JKzK1TYkbLrPxb0sCsBlIVWxI0WZfoK2jtG600ficxsRqf'
+const stripePromise = loadStripe(`${process.env.REACT_APP_S_PUBLISHABLE_KEY || spKey}`);
 
 const App = () => {
   const [viewer, setViewer] = useState<Viewer>(initialViewer)

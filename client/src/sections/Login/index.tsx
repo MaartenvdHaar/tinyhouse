@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react"
 import { useApolloClient, useMutation } from "@apollo/client"
 import { Card, Layout, Spin, Typography } from "antd"
-import { Redirect } from "react-router-dom"
+import { Redirect, useLocation } from "react-router-dom"
 
-import { ErrorBanner } from "../../lib/components";
-import { displaySuccessNotification, displayErrorMessage } from "../../lib/utils";
+import { ErrorBanner } from "../../lib/components"
+import { displaySuccessNotification, displayErrorMessage } from "../../lib/utils"
 
 import { AUTH_URL } from '../../graphql/queries'
 import { LOG_IN } from '../../graphql/mutations'
@@ -34,24 +34,27 @@ export const Login: React.FC<Props> = ({ setViewer }) => {
       if (data?.logIn && data?.logIn?.token) {
         setViewer(data.logIn)
         sessionStorage.setItem('token', data.logIn.token)
-        displaySuccessNotification("You've successfully logged in!");
+        displaySuccessNotification("You've successfully logged in!")
       }
-    }
+    },
+    onError: () => {}
   })
 
   const logInRef = useRef(logIn)
+  const location = useLocation()
 
   useEffect(() => {
-    const code = new URL(window.location.href).searchParams.get("code")
+    const searchParams = new URLSearchParams(location.search)
+    const code = searchParams.get("code")
 
     if (code) {
       logInRef.current({
         variables: {
           input: { code }
         }
-      });
+      })
     }
-  }, [])
+  }, [location.search])
 
   const handleAuthorize = async () => {
     try {
@@ -59,12 +62,11 @@ export const Login: React.FC<Props> = ({ setViewer }) => {
         query: AUTH_URL
       })
 
-      window.location.href = data?.authUrl
+      window.location.assign(data?.authUrl)
     } catch(error) {
       displayErrorMessage(
         "Sorry! We weren't able to log you in. Please try again later!"
-      );
-      throw new Error(`failed to do so: ${error}`)
+      )
     }
   }
 
@@ -73,17 +75,17 @@ export const Login: React.FC<Props> = ({ setViewer }) => {
       <Content className="log-in">
         <Spin size="large" tip="Logging you in..." />
       </Content>
-    );
+    )
   }
 
   if (logInData && logInData.logIn) {
-    const { id: viewerId } = logInData.logIn;
-    return <Redirect to={`/user/${viewerId}`} />;
+    const { id: viewerId } = logInData.logIn
+    return <Redirect to={`/user/${viewerId}`} />
   }
 
   const logInErrorBannerElement = logInError ? (
     <ErrorBanner description="Sorry! We weren't able to log you in. Please try again later!" />
-  ) : null;
+  ) : null
 
 
   return (

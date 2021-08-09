@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { IResolvers } from "apollo-server-express";
+import { IResolvers } from "graphql-tools"
 import { Google, Stripe } from "../../../lib/api";
 import { Viewer, Database, User } from "../../../lib/types";
 import { ConnectStripeArgs, LogInArgs } from "./types";
@@ -61,7 +61,7 @@ const logInViaGoogle = async (
         token
       }
     },
-    { returnOriginal: false }
+    { returnDocument: 'after' }
   );
 
   let viewer = updateRes.value;
@@ -78,7 +78,7 @@ const logInViaGoogle = async (
       listings: []
     });
 
-    viewer = insertResult.ops[0];
+    viewer = insertResult.ops[0]
   }
 
   res.cookie("viewer", userId, {
@@ -215,13 +215,18 @@ export const viewerResolvers: IResolvers = {
       try {
         let viewer = await authorize(db, req)
 
-        if (!viewer) {
+        if (!viewer || !viewer.walletId) {
           throw new Error('Viewer cannot login')
+        }
+
+        const wallet = await Stripe.disconnect(viewer.walletId)
+        if(!wallet) {
+          throw new Error('Stripe disconnect error')
         }
 
         const updateRes = await db.users.findOneAndUpdate(
           { _id: viewer._id },
-          { $set: { walletId: '' } },
+          { $set: { walletId: null as any } },
           { returnDocument: "after" }
         )
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useQuery } from "@apollo/client"
 import { Col, Layout, Row } from "antd"
-import { RouteComponentProps } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 import { UserBookings, UserListings, UserProfile } from './components'
 import { PageSkeleton, ErrorBanner } from "../../lib/components"
@@ -26,14 +26,16 @@ const { Content } = Layout;
 
 const PAGE_LIMIT = 4
 
-export const User = ({ match, viewer, setViewer }: Props & RouteComponentProps<MatchParams>) => {
+export const User = ({ viewer, setViewer }: Props) => {
   const [listingsPage, setListingsPage] = useState(1)
   const [bookingsPage, setBookingsPage] = useState(1)
+
+  const { id } = useParams<MatchParams>()
 
   const { data, loading, error, refetch } = useQuery<UserData, UserVariables>(
     USER, {
       variables: {
-        id: match.params.id,
+        id,
         bookingsPage,
         listingsPage,
         limit: PAGE_LIMIT
@@ -42,7 +44,6 @@ export const User = ({ match, viewer, setViewer }: Props & RouteComponentProps<M
     })
 
   const handleUserRefetch = async () => {
-    console.log('refetching...')
     await refetch()
   }
 
@@ -70,7 +71,7 @@ export const User = ({ match, viewer, setViewer }: Props & RouteComponentProps<M
   }
 
   const user = data ? data.user : null
-  const viewerIsUser = viewer.id === match.params.id
+  const viewerIsUser = viewer.id === id
 
   const userListings = user ? user.listings : null
   const userBookings = user ? user.bookings : null

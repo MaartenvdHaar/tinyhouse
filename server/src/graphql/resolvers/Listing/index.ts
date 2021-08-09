@@ -1,4 +1,4 @@
-import { IResolvers } from "apollo-server-express"
+import { IResolvers } from "graphql-tools"
 import { Request } from "express"
 import { ObjectId } from "mongodb"
 import { Cloudinary, Google } from "../../../lib/api"
@@ -129,7 +129,6 @@ export const listingResolvers: IResolvers = {
       }
 
       const imageUrl = await Cloudinary.upload(input.image)
-      console.log(imageUrl)
 
       const insertResult = await db.listings.insertOne({
         _id: new ObjectId(),

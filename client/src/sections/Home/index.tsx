@@ -1,12 +1,10 @@
 import React from "react"
-import { Link, RouteComponentProps } from "react-router-dom"
+import { Link, useHistory } from "react-router-dom"
 import { Col, Row, Layout, Typography } from "antd"
 
 import { HomeHero, HomeListings, HomeListingsSkeleton } from "./components"
 import { displayErrorMessage } from "../../lib/utils"
-
 import { ListingsFilter } from "../../graphql/globalTypes"
-
 import { LISTINGS } from "../../graphql/queries"
 import {
   Listings as ListingsData,
@@ -24,7 +22,7 @@ const { Paragraph, Title } = Typography
 const PAGE_LIMIT = 4
 const PAGE_NUMBER = 1
 
-export const Home = ({ history }: RouteComponentProps) => {
+export const Home = () => {
   const { loading, data } = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
     variables: {
       filter: ListingsFilter.PRICE_HIGH_TO_LOW,
@@ -33,6 +31,8 @@ export const Home = ({ history }: RouteComponentProps) => {
     },
     fetchPolicy: 'cache-and-network'
   })
+
+  const history = useHistory()
 
   const renderListingsSection = () => {
     if (loading) {

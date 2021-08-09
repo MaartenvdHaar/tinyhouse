@@ -49,7 +49,6 @@ export const ListingCreateBookingModal = ({
       handleListingRefetch()
     },
     onError: (error) => {
-      console.log(error)
       displayErrorMessage('We couldnt complete your booking with Stripe')
     }
 

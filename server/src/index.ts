@@ -11,13 +11,16 @@ const corsOptions = {
   credentials: true
 }
 
-export const createApp = (db: Database): Application => {
+export const createApp = async (db: Database): Promise<Application> => {
   const app = express()
   const server = new ApolloServer({ typeDefs, resolvers, context: ({ req, res }) => ({ db, req, res }) })
+  await server.start()
 
   app.use(express.json({ "limit": "2mb" }))
   app.use(cookieParser(process.env.SECRET))
   app.use(compression())
+
+
   server.applyMiddleware({ app, path: '/api', cors: corsOptions })
 
   app.use(express.static(`${__dirname}/client`))
@@ -28,8 +31,8 @@ export const createApp = (db: Database): Application => {
 
 const start = async () => {
   const db = await connectDatabase()
+  const app = await createApp(db)
 
-  const app = createApp(db)
   app.listen(process.env.PORT)
 
   console.log(`[app] : http://localhost:${process.env.PORT}`)

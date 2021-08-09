@@ -1,4 +1,3 @@
-import { IResolvers } from "apollo-server-express"
 import { Request } from 'express'
 import { ObjectId } from "mongodb"
 import { Stripe } from "../../../lib/api"
@@ -6,6 +5,8 @@ import { Stripe } from "../../../lib/api"
 import { Booking, BookingsIndex, Database, Listing } from "../../../lib/types"
 import { authorize } from "../../../lib/utils"
 import { CreateBookingArgs } from "./types"
+
+const msPerDay = 86400000
 
 const resolveBookingIndex = (
   bookingsIndex: BookingsIndex,
@@ -41,7 +42,7 @@ const resolveBookingIndex = (
   return newBookingsIndex
 }
 
-export const bookingResolvers: IResolvers = {
+export const bookingResolvers = {
   Mutation: {
     createBooking: async ( _root: undefined, { input }: CreateBookingArgs, { db, req }: { db: Database, req: Request }): Promise<Booking> => {
       try {
@@ -68,8 +69,17 @@ export const bookingResolvers: IResolvers = {
         }
 
         // check if checkout is not before checkin
+        const today = new Date()
         const checkInDate = new Date(checkIn)
         const checkOutDate = new Date(checkOut)
+
+        if (checkInDate.getTime() > today.getTime() + 90 * msPerDay) {
+          throw new Error('CheckInDate cant be more than 90 days from today')
+        }
+
+        if (checkOutDate.getTime() > today.getTime() + 90 * msPerDay) {
+          throw new Error('CheckOutDate cant be more than 90 days from today')
+        }
 
         if (checkOutDate < checkInDate) {
           throw new Error('checkout cant be before checkin')
@@ -83,7 +93,7 @@ export const bookingResolvers: IResolvers = {
         )
 
         // get total price to charge
-        const totalPrice = listing.price * (( checkOutDate.getTime() - checkInDate.getTime()) / 86400000 * 1)
+        const totalPrice = listing.price * ((checkOutDate.getTime() - checkInDate.getTime()) / msPerDay * 1)
 
         // get user doucment of host/listing
         const host = await db.users.findOne({
@@ -152,7 +162,7 @@ export const bookingResolvers: IResolvers = {
       booking: Booking,
       _args: Record<string, unknown>,
       { db }: { db: Database }
-    ): Promise<Listing | null> => {
+    ): Promise<Listing | undefined | null> => {
       return db.listings.findOne({ _id: booking.listing })
     },
     tenant: (booking: Booking, _args: Record<string, unknown>, { db }: { db: Database }) => {

@@ -1,12 +1,15 @@
 import React from 'react'
-import { render } from 'react-dom'
-import { BrowserRouter as Router } from 'react-router-dom'
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client'
 import { setContext } from "@apollo/client/link/context"
+import { render } from 'react-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
+import LogRocket from 'logrocket'
 
 import { App } from './app'
 import reportWebVitals from './reportWebVitals'
 import "./styles/index.css"
+
+LogRocket.init('mshhij/tinyhoused')
 
 const uri = process.env.NODE_ENV !== 'development' ? '/api' : 'http://localhost:8080/api'
 const httpLink = new HttpLink({ uri, credentials: 'include' })

@@ -7,7 +7,7 @@ export const HomeListingsSkeleton = () => {
   const emptyData = [{}, {}, {}, {}]
 
   return (
-    <div className="home-listings-skeleton">
+    <div className="home-listings-skeleton" role="alert" aria-live="polite" aria-busy="true" >
       <Skeleton paragraph={{ rows: 0 }} />
       <List
         grid={{

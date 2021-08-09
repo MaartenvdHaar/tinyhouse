@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Card, DatePicker, Divider, Typography } from "antd"
+import { Button, Card, DatePicker, Divider, Tooltip, Typography } from "antd"
 import moment, { Moment } from "moment"
 
 import { displayErrorMessage, formatListingPrice } from "../../../../lib/utils"
@@ -49,8 +49,15 @@ export const ListingCreateBooking = ({
   const disabledDate =(currentDate: Moment) => {
     if (currentDate) {
       const dateIsBeforeEndOfDay = currentDate.isBefore(moment().endOf('day'))
+      const dateIsInTheFarFuture = moment(currentDate).isAfter(
+        moment().endOf('days').add(90, 'days')
+      )
 
-      return dateIsBeforeEndOfDay || dateIsBooked(currentDate)
+      return (
+        dateIsBeforeEndOfDay ||
+        dateIsInTheFarFuture ||
+        dateIsBooked(currentDate)
+      )
     } else return false
   }
 
@@ -110,10 +117,32 @@ export const ListingCreateBooking = ({
               value={checkInDate ? checkInDate : undefined}
               onChange={(val) => setCheckInDate(val)}
               onOpenChange={() => setCheckOutDate(null)}
+              dateRender={current => {
+                if (
+                  moment(current).isSame(checkInDate ? checkInDate : undefined, "day")
+                ) {
+                  return (
+                    <Tooltip title="Check in date">
+                      <div className="ant-calendar-date ant-calendar-date__check-in">
+                        {current.date()}
+                      </div>
+                    </Tooltip>
+                  );
+                } else {
+                  return <div className="ant-calendar-date">{current.date()}</div>;
+                }
+              }}
               disabledDate={disabledDate}
               disabled={checkInInputDisabled}
               showToday={false}
-              format={'DD/MM/YYYY'}
+              format={'YYYY/MM/DD'}
+              renderExtraFooter={() => (
+                <div>
+                  <Text type="secondary" className="ant-calendar-footer-text">
+                    You can only book a listing within 90 days from today
+                  </Text>
+                </div>
+              )}
             />
           </div>
           <div className="listing-booking__card-date-picker">
@@ -125,6 +154,13 @@ export const ListingCreateBooking = ({
               disabled={checkOutInputDisabled}
               showToday={false}
               format={'DD/MM/YYYY'}
+              renderExtraFooter={() => (
+                <div>
+                  <Text type="secondary" className="ant-calendar-footer-text">
+                    Check-out can't be before check-in
+                  </Text>
+                </div>
+              )}
             />
           </div>
         </div>

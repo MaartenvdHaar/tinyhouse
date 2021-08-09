@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react'
 import { Switch, Route, useLocation } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { loadStripe } from '@stripe/stripe-js';
@@ -12,7 +12,6 @@ import { Viewer } from './lib/types'
 import { AppHeader, Home, Host, Listing, Listings, Login, NotFound, Stripe, User } from './sections'
 import { LogIn as LogInData, LogInVariables } from './graphql/mutations/LogIn/__generated__/LogIn'
 import { LOG_IN } from './graphql/mutations'
-import { useLayoutEffect } from 'react';
 
 const initialViewer: Viewer = {
   id: null,
@@ -76,14 +75,32 @@ export const App = () => {
         <AppHeader viewer={viewer} setViewer={setViewer} />
       </Affix>
       <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/host" render={props => <Host {...props} viewer={viewer} />} />
-        <Route exact path="/listing/:id" render={props => <Elements stripe={stripePromise}><Listing {...props} viewer={viewer} /></Elements>} />
-        <Route exact path="/listings/:location?" component={Listings} />
-        <Route exact path="/login" render={props => <Login {...props} setViewer={setViewer} />} />
-        <Route exact path="/stripe" render={props => <Stripe {...props} viewer={viewer} setViewer={setViewer} />} />
-        <Route exact path="/user/:id" render={props => <User {...props} viewer={viewer} setViewer={setViewer} />} />
-        <Route component={NotFound} />
+        <Route exact path="/">
+          <Home />
+        </Route>
+        <Route exact path="/host">
+          <Host viewer={viewer} />
+        </Route>
+        <Route exact path="/listing/:id">
+          <Elements stripe={stripePromise}>
+            <Listing viewer={viewer} />
+          </Elements>
+        </Route>
+        <Route exact path="/listings/:location?" >
+          <Listings />
+        </Route>
+        <Route exact path="/login">
+            <Login setViewer={setViewer} />
+          </Route>
+        <Route exact path="/stripe">
+            <Stripe viewer={viewer} setViewer={setViewer} />
+          </Route>
+        <Route exact path="/user/:id">
+          <User viewer={viewer} setViewer={setViewer} />
+        </Route>
+        <Route>
+          <NotFound />
+        </Route>
       </Switch>
     </Layout>
   )

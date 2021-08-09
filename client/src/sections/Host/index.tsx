@@ -101,8 +101,6 @@ export const Host = ({ viewer }: Props) => {
     )
   }
 
-  console.log(data)
-
   if (data && data.hostListing) {
     return <Redirect to={`/listing/${data.hostListing.id}`} />
   }
